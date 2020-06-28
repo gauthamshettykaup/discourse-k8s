@@ -1,3 +1,6 @@
+# Used this Image & followed below steps - I've added bitnami YAML files representing stateless k8s instance
+https://bitnami.com/stack/discourse
+
 # Tutorial for Discourse Deployment on k8s
 
 ## Why I want to deploy discourse on k8s?
