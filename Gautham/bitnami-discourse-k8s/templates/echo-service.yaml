@@ -1,0 +1,18 @@
+{{ if .Values.troubleshooting.enableEcho -}}
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: echo
+    environment: {{.Values.environment | quote}}
+  name: echo-service
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app: echo
+  sessionAffinity: None
+  type: ClusterIP
+{{ end }}

@@ -1,0 +1,28 @@
+{{ if .Values.troubleshooting.enableEcho -}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: echo
+    environment: {{.Values.environment | quote}}
+  name: echo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: echo
+  template:
+    metadata:
+      labels:
+        app: echo
+    spec:
+      containers:
+      - image: jmalloc/echo-server
+        name: echo
+        ports:
+          - containerPort: 8080
+        resources:
+          limits:
+            cpu: 1
+            memory: 1Gi
+{{ end }}

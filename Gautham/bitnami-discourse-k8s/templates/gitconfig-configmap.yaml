@@ -1,0 +1,10 @@
+{{- if .Values.gitconfig}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gitconfig
+  labels:
+    environment: {{.Values.environment | quote}}
+data:
+  gitconfig: {{ .Values.gitconfig | quote}}
+{{- end}}

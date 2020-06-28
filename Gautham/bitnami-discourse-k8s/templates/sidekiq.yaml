@@ -1,0 +1,76 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: sidekiq
+  labels:
+    app: sidekiq
+    environment: {{.Values.environment | quote}}
+spec:
+  containers:
+  - image: bitnami/discourse:2.1.8
+    name: sidekiq
+    resources:
+      limits:
+        cpu: 1
+        memory: 1Gi
+    args:
+    - nami
+    - start
+    - --foreground
+    - discourse-sidekiq
+    env:
+    - name: POSTGRESQL_HOST
+      value: {{.Values.postgresqlHost | quote}}
+    - name: POSTGRESQL_ROOT_USER
+      value: {{.Values.postgresqlRootUser | quote}}
+    - name: POSTGRESQL_ROOT_PASSWORD
+      value: {{.Values.postgresqlRootPassword | quote}}
+    - name: POSTGRESQL_PORT_NUMBER
+      value: {{.Values.postgresqlDatabasePort | quote}}
+    - name: POSTGRESQL_CLIENT_CREATE_DATABASE_NAME
+      value: {{.Values.postgresqlDatabaseName | quote}}
+    - name: POSTGRESQL_CLIENT_CREATE_DATABASE_USERNAME
+      value: {{.Values.postgresqlDatabaseUsername | quote}}
+    - name: POSTGRESQL_CLIENT_CREATE_DATABASE_PASSWORD
+      value: {{.Values.postgresqlDatabasePassword | quote}}
+    - name: DISCOURSE_POSTGRESQL_NAME
+      value: {{.Values.postgresqlDatabaseName | quote}}
+    - name: DISCOURSE_POSTGRESQL_USERNAME
+      value: {{.Values.postgresqlDatabaseUsername | quote}}
+    - name: DISCOURSE_POSTGRESQL_PASSWORD
+      value: {{.Values.postgresqlDatabasePassword | quote}}
+    - name: DISCOURSE_HOST
+      value: "discourse"
+    - name: DISCOURSE_PORT
+      value: "3000"
+    - name: DISCOURSE_HOSTNAME
+      value: "discourse"
+    - name: REDIS_HOST
+      value: {{.Values.redisHostname | quote}}
+    - name: REDIS_PORT_NUMBER
+      value: "6379"
+    - name: HTTP_PROXY
+      value: "http://proxy-us.intel.com:911"
+    - name: HTTPS_PROXY
+      value: "http://proxy-us.intel.com:912"
+    - name: NO_PROXY
+      value: "10.0.0.0/8,localhost,127.0.0.1,*.intel.com"
+    - name: http_proxy
+      value: "http://proxy-us.intel.com:911"
+    - name: https_proxy
+      value: "http://proxy-us.intel.com:912"
+    - name: no_proxy
+      value: "10.0.0.0/8,localhost,127.0.0.1,*.intel.com"
+    - name: SMTP_HOST
+      value: {{.Values.smtpHost | quote}}
+    - name: SMTP_PORT
+      value: {{.Values.smtpPort | quote}}
+    - name: SMTP_USER
+      value: {{.Values.smtpUser | quote}}
+    - name: SMTP_PASSWORD
+      value: {{.Values.smtpPassword | quote}}
+    - name: SMTP_TLS
+      value: {{.Values.smtpTLS | quote}}
+    - name: SMTP_AUTH
+      value: {{.Values.smtpAuth | quote}}
+    

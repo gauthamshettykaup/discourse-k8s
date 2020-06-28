@@ -1,0 +1,16 @@
+apiVersion: v2
+name: Discourse
+version: 2.1.8.0
+description: Sets up an instance of Discourse v 2.1.8 (https://github.com/discourse/discourse/releases/tag/v2.1.8)
+keywords:
+  - Discourse
+  - Intel
+maintainers:
+  - name: Phillip Boushy
+    email: phillip.boushy@intel.com
+  - name: Gautham Shetty
+    email: 
+  - name: Phillip Galey
+    email: 
+engine: gotpl
+appVersion: 2.1.8

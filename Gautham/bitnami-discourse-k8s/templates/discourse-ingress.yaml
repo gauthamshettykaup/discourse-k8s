@@ -1,0 +1,30 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: discourse
+  labels:
+    environment: {{.Values.environment | quote}}
+  annotations:
+    nginx.ingress.kubernetes.io/affinity: "cookie"
+    nginx.ingress.kubernetes.io/session-cookie-name: {{.Values.discourse.hostname | quote}}
+spec:
+  rules:
+  - host: {{.Values.discourse.hostname | quote}}
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: discourse
+          servicePort: 3000
+      {{ if .Values.troubleshooting.enableEcho -}}
+      - path: /echo
+        backend:
+          serviceName: echo-service
+          servicePort: 80
+      {{ end }}
+  {{ if .Values.discourse.tlsSecret -}}
+  tls:
+  - secretName: {{.Values.discourse.tlsSecret}}
+    hosts:
+    - {{.Values.discourse.hostname | quote}}
+  {{ end }}

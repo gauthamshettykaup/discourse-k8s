@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    app: postgres
+    environment: {{.Values.environment | quote}}
+  name: postgres
+spec:
+  serviceName: postgres
+  replicas: 1
+  podManagementPolicy: OrderedReady
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+      - image: bitnami/postgresql:9.6
+        name: postgres
+        resources:
+          limits:
+            cpu: 1
+            memory: 1Gi
+        volumeMounts:
+        - mountPath: /bitnami/postgresql
+          name: postgresql-data
+        env:
+        - name: POSTGRESQL_POSTGRES_PASSWORD
+          value: {{.Values.postgresqlRootPassword | quote}}
+        - name: POSTGRESQL_DATABASE
+          value: {{.Values.postgresqlDatabaseName | quote}}
+        - name: POSTGRESQL_USERNAME
+          value: {{.Values.postgresqlDatabaseUsername | quote}}
+        - name: POSTGRESQL_PASSWORD
+          value: {{.Values.postgresqlDatabasePassword | quote}}
+  volumeClaimTemplates:
+  - metadata:
+      name: postgresql-data
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 10Gi
+
+        

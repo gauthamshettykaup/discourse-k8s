@@ -1,0 +1,35 @@
+environment: "Pre-Prod"
+discourseUserName: "admin"
+discoursePassword: "10.admin.osx"
+discourseEmail: "macforums@intel.com"
+postgresqlHost: "postgres5189-us-fm-in.icloud.intel.com"
+postgresqlRootUser: "macforums_pp_so"
+postgresqlRootPassword: "p2bHfRi9wMhMm8d"
+postgresqlDatabaseName: "macforums_pp"
+postgresqlDatabaseUsername: "macforums_pp_so"
+postgresqlDatabasePassword: "p2bHfRi9wMhMm8d"
+postgresqlDatabasePort: 5433
+
+discoursePullPolicy: "Always"
+discourseHost: "discourse"
+discoursePort: 3000
+discourse:
+  hostname: macforums-pp.intel.com
+  tlsSecret: macforums-pp-tls
+
+
+redisHostname: "redis"
+redisPort: 6379
+
+smtpHost: "smtpauth.intel.com"
+smtpPort: "587"
+smtpUser: "macforums@intel.com"
+smtpPassword: "k66FcbHXb&xjmE7+aTVp"
+smtpTLS: "yes"
+smtpAuth: "login"
+
+gitsyncImage: "amr-registry.caas.intel.com/macsatintel/git-sync:3.1.2"
+
+gitconfig: |
+    [http "https://github.com/"]
+        proxy = proxy-us.intel.com:912

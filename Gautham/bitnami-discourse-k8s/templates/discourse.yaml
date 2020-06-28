@@ -1,0 +1,127 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  labels:
+    app: discourse
+    environment: {{.Values.environment | quote}}
+  name: discourse
+spec:
+  serviceName: discourse
+  replicas: 1
+  podManagementPolicy: OrderedReady
+  selector:
+    matchLabels:
+      app: discourse
+      environment: {{.Values.environment | quote}}
+  template:
+    metadata:
+      labels:
+        app: discourse
+        environment: {{.Values.environment | quote}}
+    spec:
+      imagePullSecrets:
+      - name: amr-registry-caas
+      initContainers:
+      - name: check-db-ready
+        image: postgres
+        command: 
+        - /bin/sh
+        args:
+        - -c
+        - i=30; while [ $i -gt 0 ]; do pg_isready -h "$POSTGRESQL_HOST" -p "$POSTGRESQL_PORT_NUMBER" -U "$POSTGRESQL_ROOT_USER" -d "$POSTGRESQL_DATABASE_NAME"; if [ $? -eq 0 ]; then break; fi; echo "$i Postgres
+          init process in progress..."; sleep 1; i=$((i-1)); done; echo "Postgres should now be started"; exit 0;
+        env:
+        - name: POSTGRESQL_HOST
+          value: {{.Values.postgresqlHost | quote}}
+        - name: POSTGRESQL_ROOT_USER
+          value: {{.Values.postgresqlRootUser | quote}}
+        - name: POSTGRESQL_ROOT_PASSWORD
+          value: {{.Values.postgresqlRootPassword | quote}}
+        - name: POSTGRESQL_PORT_NUMBER
+          value: {{.Values.postgresqlDatabasePort | quote}}
+        - name: POSTGRESQL_DATABASE_NAME
+          value: {{.Values.postgresqlDatabaseName | quote}}
+      containers:
+      - image: bitnami/discourse:2.1.8
+        imagePullPolicy: Always
+        name: discourse
+        resources:
+          limits:
+            cpu: 2
+            memory: 2Gi
+        volumeMounts:
+        - mountPath: /bitnami
+          name: discourse-data
+        # - mountPath: /bitnami/discourse/plugins
+        #   name: plugins
+        env:
+        # ENABLE if you want to skip Discourse Install. Causes it to start faster.
+        - name: DISCOURSE_SKIP_INSTALL
+          value: "no"
+        - name: DISCOURSE_HOSTNAME
+          value: {{.Values.discourse.hostname | quote}}
+        - name: DISCOURSE_USERNAME
+          value: {{.Values.discourseUserName | quote}}
+        - name: DISCOURSE_PASSWORD
+          value: {{.Values.discoursePassword | quote}}
+        - name: DISCOURSE_EMAIL
+          value: {{.Values.discourseEmail | quote}}    
+        - name: POSTGRESQL_HOST
+          value: {{.Values.postgresqlHost | quote}}
+        - name: POSTGRESQL_ROOT_USER
+          value: {{.Values.postgresqlRootUser | quote}}
+        - name: POSTGRESQL_ROOT_PASSWORD
+          value: {{.Values.postgresqlRootPassword | quote}}
+        - name: POSTGRESQL_PORT_NUMBER
+          value: {{.Values.postgresqlDatabasePort | quote}}
+        - name: POSTGRESQL_CLIENT_CREATE_DATABASE_NAME
+          value: {{.Values.postgresqlDatabaseName | quote}}
+        - name: POSTGRESQL_CLIENT_CREATE_DATABASE_USERNAME
+          value: {{.Values.postgresqlDatabaseUsername | quote}}
+        - name: POSTGRESQL_CLIENT_CREATE_DATABASE_PASSWORD
+          value: {{.Values.postgresqlDatabasePassword | quote}}
+        - name: DISCOURSE_POSTGRESQL_NAME
+          value: {{.Values.postgresqlDatabaseName | quote}}
+        - name: DISCOURSE_POSTGRESQL_USERNAME
+          value: {{.Values.postgresqlDatabaseUsername | quote}}
+        - name: DISCOURSE_POSTGRESQL_PASSWORD
+          value: {{.Values.postgresqlDatabasePassword | quote}}
+        - name: REDIS_HOST
+          value: "redis"
+        - name: REDIS_PORT_NUMBER
+          value: "6379"
+        - name: HTTP_PROXY
+          value: "http://proxy-us.intel.com:911"
+        - name: HTTPS_PROXY
+          value: "http://proxy-us.intel.com:912"
+        - name: NO_PROXY
+          value: "10.0.0.0/8,localhost,127.0.0.1,*.intel.com"
+        - name: http_proxy
+          value: "http://proxy-us.intel.com:911"
+        - name: https_proxy
+          value: "http://proxy-us.intel.com:912"
+        - name: no_proxy
+          value: "10.0.0.0/8,localhost,127.0.0.1,*.intel.com"
+        - name: SMTP_HOST
+          value: {{.Values.smtpHost | quote}}
+        - name: SMTP_PORT
+          value: {{.Values.smtpPort | quote}}
+        - name: SMTP_USER
+          value: {{.Values.smtpUser | quote}}
+        - name: SMTP_PASSWORD
+          value: {{.Values.smtpPassword | quote}}
+        - name: SMTP_TLS
+          value: {{.Values.smtpTLS | quote}}
+        - name: SMTP_AUTH
+          value: {{.Values.smtpAuth | quote}}
+  volumeClaimTemplates:
+  - metadata:
+      name: discourse-data
+    spec:
+      storageClassName: "oenfs-client" # needed for chown stuff
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 10Gi
+  
